@@ -7,4 +7,5 @@ public class TypeDocumentationOptions
     public bool BackButton { get; set; }
     public bool GitlabWiki { get; set; }
     public bool IncludePrivateMembers { get; set; }
+    public bool GenerateMetadata { get; set; }
 }

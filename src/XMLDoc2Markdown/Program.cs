@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Markdown;
 using Microsoft.Extensions.CommandLineUtils;
 using XMLDoc2Markdown.Utils;
@@ -62,6 +63,11 @@ internal class Program
             "Write documentation for private members.",
             CommandOptionType.NoValue);
 
+        CommandOption generateMetadata = app.Option(
+            "--generate-metadata",
+            "Generate metadata files for each document",
+            CommandOptionType.NoValue);
+
         app.OnExecute(() =>
         {
             string src = srcArg.Value;
@@ -74,6 +80,7 @@ internal class Program
                 GitlabWiki = gitlabWikiOption.HasValue(),
                 BackButton = backButtonOption.HasValue(),
                 IncludePrivateMembers = IncludePrivateMethodOption.HasValue(),
+                GenerateMetadata = generateMetadata.HasValue()
             };
             int succeeded = 0;
             int failed = 0;
@@ -113,9 +120,14 @@ internal class Program
 
                     try
                     {
+                        TypeDocumentation typeDoc = new(assembly, type, documentation, options);
                         File.WriteAllText(
                             Path.Combine(@out, $"{fileName}.md"),
-                            new TypeDocumentation(assembly, type, documentation, options).ToString()
+                            typeDoc.ToString()
+                        );
+                        File.WriteAllText(
+                            Path.Combine(@out, $"{fileName}.meta.json"),
+                            JsonSerializer.Serialize(typeDoc.Metadata)
                         );
                         succeeded++;
                     }

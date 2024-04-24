@@ -21,6 +21,8 @@ public class TypeDocumentation
     private readonly TypeDocumentationOptions options;
     private readonly IMarkdownDocument document = new MarkdownDocument();
 
+    public TypeMetadata Metadata { get; } = new TypeMetadata();
+
     public TypeDocumentation(Assembly assembly, Type type, XmlDocumentation documentation, TypeDocumentationOptions options = null)
     {
         RequiredArgument.NotNull(assembly, nameof(assembly));
@@ -40,9 +42,14 @@ public class TypeDocumentation
             this.WriteBackButton(top: true);
         }
 
-        this.document.AppendHeader(this.type.GetDisplayName().FormatChevrons(), 1);
+        this.Metadata.Name = this.type.Name;
+        this.Metadata.DisplayName = this.type.GetDisplayName();
+        this.document.AppendHeader(this.Metadata.DisplayName.FormatChevrons(), 1);
 
-        this.document.AppendParagraph($"Namespace: {this.type.Namespace}");
+        this.Metadata.Namespace = this.type.Namespace;
+        this.document.AppendParagraph($"Namespace: {this.Metadata.Namespace}");
+
+        this.Metadata.AssemblyName = this.assembly.GetName().Name;
 
         XElement typeDocElement = this.documentation.GetMember(this.type);
 
