@@ -174,7 +174,8 @@ internal static class TypeExtensions
     internal static string GetDocsFileName(this Type type)
     {
         RequiredArgument.NotNull(type, nameof(type));
-        return type.GetIdentifier().ToLower().Replace('`', '-');
+        return type.GetIdentifier().ToLower().Replace('`', '-')
+            .TrimEnd('&'); // Remove trailing '&' for reference types
     }
 
     internal static MarkdownInlineElement GetDocsLink(
