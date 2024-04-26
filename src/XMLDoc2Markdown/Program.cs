@@ -90,8 +90,13 @@ internal class Program
                 Directory.CreateDirectory(@out);
             }
 
-            Assembly assembly = new AssemblyLoadContext(src)
+            AssemblyLoadContext loadContext = new(src);
+            Assembly assembly = loadContext
                 .LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(src)));
+            foreach (AssemblyName referencedAssembly in assembly.GetReferencedAssemblies())
+            {
+                loadContext.LoadFromAssemblyName(referencedAssembly);
+            }
 
             string assemblyName = assembly.GetName().Name;
             XmlDocumentation documentation = new(src);
@@ -120,7 +125,10 @@ internal class Program
 
                     try
                     {
-                        TypeDocumentation typeDoc = new(assembly, type, documentation, options);
+                        TypeDocumentation typeDoc = new(assembly, type, documentation, options)
+                        {
+                            Context = loadContext
+                        };
                         File.WriteAllText(
                             Path.Combine(@out, $"{fileName}.md"),
                             typeDoc.ToString()

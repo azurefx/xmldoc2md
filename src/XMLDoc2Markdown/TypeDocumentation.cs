@@ -22,6 +22,7 @@ public class TypeDocumentation
     private readonly IMarkdownDocument document = new MarkdownDocument();
 
     public TypeMetadata Metadata { get; } = new TypeMetadata();
+    internal AssemblyLoadContext Context { get; set; }
 
     public TypeDocumentation(Assembly assembly, Type type, XmlDocumentation documentation, TypeDocumentationOptions options = null)
     {
@@ -721,6 +722,10 @@ public class TypeDocumentation
 
     private Type GetTypeFromFullName(string typeFullName)
     {
-        return Type.GetType(typeFullName) ?? this.assembly.GetType(typeFullName);
+        return Type.GetType(typeFullName) ?? this.assembly.GetType(typeFullName)
+            // Look for this type in referenced assemblies
+            ?? this.Context.Assemblies.Select(referencedAssembly => referencedAssembly == this.assembly
+                ? null
+                : referencedAssembly.GetType(typeFullName)).FirstOrDefault(it => it != null);
     }
 }
