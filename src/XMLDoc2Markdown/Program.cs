@@ -67,6 +67,11 @@ internal class Program
             "--generate-metadata",
             "Generate metadata files for each document",
             CommandOptionType.NoValue);
+        
+        CommandOption dependencyLinks = app.Option(
+            "--dependency-links",
+            "Create links to symbols within referenced assemblies",
+            CommandOptionType.NoValue);
 
         app.OnExecute(() =>
         {
@@ -80,7 +85,8 @@ internal class Program
                 GitlabWiki = gitlabWikiOption.HasValue(),
                 BackButton = backButtonOption.HasValue(),
                 IncludePrivateMembers = IncludePrivateMethodOption.HasValue(),
-                GenerateMetadata = generateMetadata.HasValue()
+                GenerateMetadata = generateMetadata.HasValue(),
+                DependencyLinks = dependencyLinks.HasValue()
             };
             int succeeded = 0;
             int failed = 0;

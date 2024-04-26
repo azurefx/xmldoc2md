@@ -123,7 +123,13 @@ internal static class MethodBaseExtensions
         return $"{url}#{anchor}";
     }
 
-    internal static MarkdownInlineElement GetDocsLink(this MethodBase methodInfo, Assembly assembly, string text = null, bool noExtension = false, bool noPrefix = false)
+    internal static MarkdownInlineElement GetDocsLink(
+        this MethodBase methodInfo,
+        Assembly assembly,
+        AssemblyLoadContext context = null,
+        string text = null,
+        bool noExtension = false,
+        bool noPrefix = false)
     {
         RequiredArgument.NotNull(methodInfo, nameof(methodInfo));
         RequiredArgument.NotNull(assembly, nameof(assembly));
@@ -142,6 +148,10 @@ internal static class MethodBaseExtensions
                 return new MarkdownLink(text, methodInfo.GetMSDocsUrl());
             }
             else if (type.Assembly == assembly)
+            {
+                return new MarkdownLink(text, methodInfo.GetInternalDocsUrl(noExtension, noPrefix));
+            }
+            else if (context != null && context.Assemblies.Contains(type.Assembly))
             {
                 return new MarkdownLink(text, methodInfo.GetInternalDocsUrl(noExtension, noPrefix));
             }

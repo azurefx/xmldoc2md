@@ -130,15 +130,21 @@ internal static class MemberInfoExtensions
         return $"{url}#{anchor}";
     }
 
-    internal static MarkdownInlineElement GetDocsLink(this MemberInfo memberInfo, Assembly assembly, string text = null, bool noExtension = false, bool noPrefix = false)
+    internal static MarkdownInlineElement GetDocsLink(
+        this MemberInfo memberInfo,
+        Assembly assembly,
+        AssemblyLoadContext context = null,
+        string text = null,
+        bool noExtension = false,
+        bool noPrefix = false)
     {
         RequiredArgument.NotNull(memberInfo, nameof(memberInfo));
         RequiredArgument.NotNull(assembly, nameof(assembly));
 
         return memberInfo switch
         {
-            Type type => type.GetDocsLink(assembly, text, noExtension, noPrefix),
-            MethodBase method => method.GetDocsLink(assembly, text, noExtension, noPrefix),
+            Type type => type.GetDocsLink(assembly, context, text, noExtension, noPrefix),
+            MethodBase method => method.GetDocsLink(assembly, context, text, noExtension, noPrefix),
             _ => getDocsLinkBase(memberInfo, assembly, text, noExtension, noPrefix),
         };
 

@@ -181,6 +181,7 @@ internal static class TypeExtensions
     internal static MarkdownInlineElement GetDocsLink(
         this Type type,
         Assembly assembly,
+        AssemblyLoadContext context = null,
         string text = null,
         bool noExtension = false,
         bool noPrefix = false)
@@ -197,6 +198,10 @@ internal static class TypeExtensions
                 return new MarkdownLink(text, type.GetMSDocsUrl());
             }
             else if (type.Assembly == assembly)
+            {
+                return new MarkdownLink(text, type.GetInternalDocsUrl(noExtension, noPrefix));
+            }
+            else if (context != null && context.Assemblies.Contains(type.Assembly))
             {
                 return new MarkdownLink(text, type.GetInternalDocsUrl(noExtension, noPrefix));
             }
