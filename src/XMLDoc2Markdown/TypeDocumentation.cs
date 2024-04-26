@@ -210,6 +210,7 @@ public class TypeDocumentation
         {
             "see" => this.GetLinkFromReference(element.Attribute("cref")?.Value ?? element.Attribute("href")?.Value, element.Value),
             "seealso" => this.GetLinkFromReference(element.Attribute("cref")?.Value, element.Value),
+            "paramref" => new MarkdownInlineCode(element.Attribute("name")?.Value ?? element.Value),
             "c" => new MarkdownInlineCode(element.Value),
             "br" => new MarkdownText("<br>"),
             "para" => this.XNodesToMarkdownParagraph(element.Nodes()),
